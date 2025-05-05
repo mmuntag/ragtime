@@ -50,10 +50,18 @@ def load_timeseries(frequency: Frequency, data_type: DataType) -> pd.DataFrame:
     return df
 
 
-def filter_timeseries(df: pd.DataFrame, interval: Tuple[datetime, datetime]):
+def filter_timeseries(df: pd.DataFrame, interval: Tuple[datetime, datetime], jump: float) -> pd.DataFrame:
 
     start, end = pd.to_datetime(interval[0]), pd.to_datetime(interval[1])
-    df = df[(df['datetime'] >= start) & (df['datetime'] <= end)]
+    df = df[(df['datetime'] >= start) & (df['datetime'] <= end)].copy()
+
+    if jump:
+        if 'high' in df.columns:
+            df['jump'] = df['high'] - df['low']
+        else:
+            df['jump'] = abs(df.iloc[:, 2].diff())
+        df = df[(df['jump'] >= jump)]
+
     return df
 
 
@@ -63,10 +71,14 @@ def main():
     parser.add_argument("--start_date", help="Start date (YYYY-MM-DD)", required=True)
     parser.add_argument("--end_date", help="End date (YYYY-MM-DD)", required=True)
     parser.add_argument("--frequency", help="daily or minute (e.g., D, m)", required=True)
+    parser.add_argument("--min_jump", help="filter for jump between steps", required=False)
 
     args = parser.parse_args()
     df = load_timeseries(args.frequency, args.data_type)
-    filtered_df = filter_timeseries(df=df, interval=(args.start_date, args.end_date))
+    jump_size = None
+    if args.min_jump:
+        jump_size = float(args.min_jump)
+    filtered_df = filter_timeseries(df=df, interval=(args.start_date, args.end_date), jump=jump_size)
     print(filtered_df.to_string(index=False))
 
 
