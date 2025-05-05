@@ -7,8 +7,7 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get update -qq && \
     libffi-dev libssl-dev libbz2-dev libreadline-dev libsqlite3-dev \
     openssh-server ffmpeg libsm6 libxext6 ca-certificates bzip2 && \
     apt-get clean -qq && \
-    rm -rf /var/lib/apt/lists/* && \
-    rm -rf /tmp/*
+    rm -rf /var/lib/apt/lists/* /tmp/*
 
 # Install Miniconda
 ENV CONDA_DIR=/opt/conda
@@ -21,10 +20,10 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
 ENV PATH=$CONDA_DIR/bin:$PATH
 
 # (Optional) Update conda and create a fresh env
-RUN conda update -n base -c defaults conda
+RUN conda update -n base -c defaults conda -y
 
 # Add gcc
-RUN conda install -y gcc_linux-64 gxx_linux-64
+RUN conda install -y gcc_linux-64 gxx_linux-64 -c conda-forge
 ENV CC=gcc CXX=g++
 
 # Use a writable working directory
@@ -43,17 +42,15 @@ RUN chmod +x /entry.sh
 ENTRYPOINT ["/entry.sh"]
 
 # Install Python dependencies
-COPY requirements.txt /tmp/requirements.txt
-RUN pip install --upgrade pip && \
-    pip install torch torchvision torchaudio --extra-index-url https://download.pytorch.org/whl/cu123 && \
-    pip install -r /tmp/requirements.txt
+RUN conda install -y -c conda-forge python=3.10 numpy pandas pandoc
 
-RUN conda install python=3.10 numpy pandas pandoc -c conda-forge -y
-RUN cd ../
-RUN git clone https://github.com/botondbarta/HunSum.git
-RUN cd HunSum
-RUN pip install -e HunSum
+# Clone and install HunSum
+RUN git clone https://github.com/botondbarta/HunSum.git && \
+    pip install -e HunSum
 
-RUN git clone https://github.com/DavidNemeskey/cc_corpus.git
+# Clone and install cc_corpus
 ENV CFLAGS="-Wno-narrowing"
-RUN pip install -e cc_corpus
+RUN git clone https://github.com/DavidNemeskey/cc_corpus.git && \
+    pip install -e cc_corpus
+
+# RUN conda install -y -c pytorch -c nvidia -c conda-forge pytorch torchvision torchaudio cudatoolkit=12.3
