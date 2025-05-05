@@ -12,6 +12,7 @@ class DataType(str, Enum):
     EUR_PLN = "pln"
     EUR_CZK = "czk"
     BUX = "bux"
+    VIX = "vix"
 
 
 class Frequency(str, Enum):
@@ -38,12 +39,16 @@ def load_timeseries(frequency: Frequency, data_type: DataType) -> pd.DataFrame:
                     csv_name = "ECB_EUR_CZK"
                 case DataType.BUX:
                     csv_name = "BET_BUX"
+                case DataType.VIX:
+                    csv_name = "VIX"
         case Frequency.MINUTELY:
             prefix = "minutely/"
             match data_type:
                 case DataType.EUR_HUF:
                     csv_name = "EUR_HUF_2025"
                     separator = ";"
+                case _:
+                    raise RuntimeError("dataset does not exist")
 
     csv_path = f"data/{prefix}{csv_name}.csv"
     df = pd.read_csv(csv_path, parse_dates=['datetime'], sep=separator)
@@ -67,7 +72,7 @@ def filter_timeseries(df: pd.DataFrame, interval: Tuple[datetime, datetime], jum
 
 def main():
     parser = argparse.ArgumentParser(description="Filter and resample time series data from a CSV file.")
-    parser.add_argument("--data_type", help="e.g. bux, huf, pln, ron, czk", required=True)
+    parser.add_argument("--data_type", help="e.g. bux, huf, pln, ron, czk, vix", required=True)
     parser.add_argument("--start_date", help="Start date (YYYY-MM-DD)", required=True)
     parser.add_argument("--end_date", help="End date (YYYY-MM-DD)", required=True)
     parser.add_argument("--frequency", help="daily or minute (e.g., D, m)", required=True)
