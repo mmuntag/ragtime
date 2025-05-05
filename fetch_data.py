@@ -50,7 +50,7 @@ def load_timeseries(frequency: Frequency, data_type: DataType) -> pd.DataFrame:
                 case _:
                     raise RuntimeError("dataset does not exist")
 
-    csv_path = f"data/{prefix}{csv_name}.csv"
+    csv_path = f"/workspace/data/{prefix}{csv_name}.csv"
     df = pd.read_csv(csv_path, parse_dates=['datetime'], sep=separator)
     return df
 
