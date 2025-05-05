@@ -55,22 +55,22 @@ if __name__ == "__main__":
     ]
     documents = documents
 
-    retriever = get_retriever(args, documents, top_n=10, rerank=args.rerank)
+    retriever = get_retriever(args, documents, top_n=200, rerank=args.rerank)
 
     query = {
         "id": "nagy_marton_1",
-        "text": "Nagy Márton nemzetgazdasági miniszter bejelentést tesz",
-        #"text": "Nagy Márton nemzetgazdasági miniszter bejelentést tesz, vagy a kormányzat gazdaságpolitikai változásáról beszél",
+        #"text": "Nagy Márton nemzetgazdasági miniszter bejelentést tesz",
+        "text": "Nagy Márton nemzetgazdasági miniszter bejelentést tesz, vagy a kormányzat gazdaságpolitikai változásáról beszél",
     }
 
     results = retriever.retrieve(query["text"])
-    print("Retrieved nodes:")
+    print("Retrieved nodes:", len(results))
     for node in results:
         print(f"Node ID: {node.node.node_id}, Score: {node.score}")
         print(f"Node text: <<{node.metadata['title']}>> {node.metadata['lead']}\n{node.metadata['tags']}")
         #print(f"Node text: {node['title']} {node['lead']} {node.text}")
         print("-" * 20)
-    
+
     # Save the retrieved nodes to a JSON file
     output_file = f"data/local/questions/{query['id']}.json"
     with open(output_file, "w") as f:
