@@ -64,8 +64,8 @@ if __name__ == "__main__":
     }
 
     results = retriever.retrieve(query["text"])
-    print("Retrieved nodes:", len(results))
-    for node in results:
+    print("Retrieved nodes:", len(list(results)))
+    for node in list(results)[:10]:
         print(f"Node ID: {node.node.node_id}, Score: {node.score}")
         print(f"Node text: <<{node.metadata['title']}>> {node.metadata['lead']}\n{node.metadata['tags']}")
         #print(f"Node text: {node['title']} {node['lead']} {node.text}")

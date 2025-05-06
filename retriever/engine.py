@@ -103,7 +103,7 @@ def get_retriever(args, nodes, top_n = 10, rerank = True):
     vector_index = load_index_from_storage(storage_context)
     sparse_retriever = BM25Retriever.from_defaults(
         docstore=SimpleDocumentStore.from_persist_dir(persist_dir=storage_context_path),
-        similarity_top_k=5,
+        similarity_top_k=top_n,
         # Optional: We can pass in the stemmer and set the language for stopwords
         # This is important for removing stopwords and stemming the query + text
         # The default is english for both
