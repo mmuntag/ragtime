@@ -22,3 +22,7 @@ Paste the following code to `keys.yaml`
 ```
 openai: sk-proj...
 ```
+
+## Install
+pip install -r requirements.txt
+python -c "import nltk;nltk.download('stopwords')"
