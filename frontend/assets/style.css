@@ -1,0 +1,24 @@
+body {
+    height: 100%;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+#root-container {
+    background: linear-gradient(to bottom right, #e3f2fd, #648ad5);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+}
+
+.search-container {
+    padding: 20px;
+    max-width: 700px;
+    width: 100%;
+    text-align: center;
+    align-content: center;
+}
