@@ -78,7 +78,7 @@ def get_retriever(args, nodes, top_n = 10, rerank = True):
         print("[STORAGE] Reranking...")
         node_postprocessors=[
             LLMRerank(
-                choice_batch_size=top_n*2,
+                choice_batch_size=16,
                 top_n=top_n,
             )
         ]

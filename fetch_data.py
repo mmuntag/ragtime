@@ -49,7 +49,7 @@ def load_timeseries(frequency: Frequency, data_type: DataType) -> pd.DataFrame:
             prefix = "minutely/"
             match data_type:
                 case DataType.EUR_HUF:
-                    csv_name = "EUR_HUF_2025"
+                    csv_name = "EUR_HUF"
                     separator = ";"
                 case _:
                     raise RuntimeError("dataset does not exist")

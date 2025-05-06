@@ -15,10 +15,14 @@ This project lays the foundation for more sophisticated, multimodal models and a
 ### https://www.cboe.com/tradable_products/vix/vix_historical_data/
 
 ## fetch data from csvs:
-```python3 fetch_data.py --data_type huf --frequency D --start_date "2025-01-01 00:00:00" --end_date "2025-01-02 00:00:00 --min_jump 10.0```
+```python3 fetch_data.py --data_type huf --frequency D --start_date "2025-01-01 00:00:00" --end_date "2025-01-02 00:00:00" --min_jump 10.0```
 
 ## Retriever
 Paste the following code to `keys.yaml`
 ```
 openai: sk-proj...
 ```
+
+## Install
+pip install -r requirements.txt
+python -c "import nltk;nltk.download('stopwords')"
