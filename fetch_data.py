@@ -1,9 +1,13 @@
+from functools import reduce
 from typing import Tuple
 
+import numpy as np
 import pandas as pd
 import argparse
 from datetime import datetime
 from enum import Enum
+
+from scipy.stats import norm
 
 
 class DataType(str, Enum):
@@ -55,7 +59,7 @@ def load_timeseries(frequency: Frequency, data_type: DataType) -> pd.DataFrame:
     return df
 
 
-def filter_timeseries(df: pd.DataFrame, interval: Tuple[datetime, datetime], jump: float) -> pd.DataFrame:
+def filter_timeseries(df: pd.DataFrame, interval: Tuple[datetime, datetime], jump: float = None) -> pd.DataFrame:
 
     start, end = pd.to_datetime(interval[0]), pd.to_datetime(interval[1])
     df = df[(df['datetime'] >= start) & (df['datetime'] <= end)].copy()
@@ -68,6 +72,30 @@ def filter_timeseries(df: pd.DataFrame, interval: Tuple[datetime, datetime], jum
         df = df[(df['jump'] >= jump)]
 
     return df
+
+
+def eur_huf_regional_score(date_interval: Tuple[str, str] = ('2010-01-01', '2025-05-01'), window: int = 30) -> pd.DataFrame:
+    all_df = []
+    for data_type in ["huf", "ron", "pln", "czk"]:
+        df = load_timeseries('D', data_type)
+        df = filter_timeseries(df, date_interval)
+        all_df.append(df.drop(columns=["TIME PERIOD"]))
+
+    merged_df = reduce(lambda left, right: pd.merge(left, right, on='datetime', how='outer'), all_df)
+    merged_df = merged_df.sort_values("datetime").reset_index(drop=True)
+
+    # Compute daily returns
+    rates = merged_df[['EUR_HUF', 'EUR_RON', 'EUR_PLN', 'EUR_CZK']].pct_change()
+    for col in ['EUR_RON', 'EUR_PLN', 'EUR_CZK']:
+        for shift in range(1, 6):
+            rates[f"{col}_{shift}"] = rates[col].shift(shift)
+
+    mean = np.mean(rates.drop('EUR_HUF', axis=1), axis=1)
+    std = np.std(rates.drop('EUR_HUF', axis=1), axis=1)
+    rates['cdf'] = norm.cdf(rates['EUR_HUF'], loc=mean, scale=std)
+    rates['EUR_HUF regional score'] = (rates.cdf - 0.5).rolling(window=window, center=True).mean()
+    rates.index = merged_df.datetime
+    return rates[['EUR_HUF regional score']]
 
 
 def main():
