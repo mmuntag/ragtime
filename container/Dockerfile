@@ -53,4 +53,4 @@ ENV CFLAGS="-Wno-narrowing"
 RUN git clone https://github.com/DavidNemeskey/cc_corpus.git && \
     pip install -e cc_corpus
 
-# RUN conda install -y -c pytorch -c nvidia -c conda-forge pytorch torchvision torchaudio cudatoolkit=12.3
+RUN pip install llama-index llama-index-core llama-index-embeddings-openai llama-index-retrievers nltk PyStemmer
