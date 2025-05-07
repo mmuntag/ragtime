@@ -34,6 +34,7 @@ if __name__ == "__main__":
         rates['std'] = std
 
         rates.index = merged_df.datetime
+        rates.to_csv(f'EUR_HUF_regional_{window}.csv')
         fig, ax = plt.subplots()
         rates['EUR_HUF regional score'].plot(ax=ax)
         ax.xaxis.set_major_locator(mdates.YearLocator())
